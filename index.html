@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonfire</title>
+    <!-- FontAwesome (CDN) - Local mode instructions in Help -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Persistent Notification Bar -->
+        <div id="unsaved-notice" class="notification-bar hidden">
+            <div class="notice-content">
+                <i class="fa fa-circle-exclamation"></i>
+                <span>編集中のデータ（WebStorage）を表示しています。永続化には更新が必要です。</span>
+            </div>
+            <button id="global-copy-btn" class="btn btn-sm btn-neutral"><i class="fa fa-clipboard"></i> データをコピー</button>
+        </div>
+
+        <main id="main-view" class="view">
+            <div id="content" class="markdown-body">
+                <!-- Converted HTML will be injected here -->
+            </div>
+            <footer id="footer">
+                <p>Created with <a href="https://github.com/google-deepmind/bonfire" target="_blank">Bonfire</a> v1.0.0
+                    | <i class="fa-solid fa-fire-flame-curved"></i></p>
+                <p>Released under the MIT License | Editor: <span class="kbd">Ctrl</span> + <span class="kbd">B</span>
+                </p>
+            </footer>
+        </main>
+
+        <aside id="edit-view" class="view off-canvas hidden">
+            <div class="editor-container">
+                <div class="editor-header">
+                    <h2>Editor</h2>
+                    <div class="actions">
+                        <button id="discard-btn" class="btn btn-outline-danger" title="変更を破棄して元に戻す"><i
+                                class="fa fa-trash-can"></i></button>
+                        <button id="save-btn" class="btn btn-neutral"><i class="fa fa-clipboard"></i> コピー</button>
+                        <button id="close-editor-btn" class="btn btn-icon btn-subtle" title="エディタを閉じる"><i
+                                class="fa fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <textarea id="markdown-input" placeholder="Markdownを入力してください..."></textarea>
+                <!-- Removed status status message as requested -->
+
+                <div class="local-mode-help">
+                    <button id="help-btn" class="btn-text">完全ローカルモードの設定方法</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div id="help-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>完全ローカルモードの設定方法</h2>
+            <div class="help-body">
+                <p>Bonfireは、インターネット接続がない完全に閉じたネットワーク環境でも動作させることができます。</p>
+
+                <h3>手順 1: 外部ライブラリのダウンロード</h3>
+                <p>以下の2つのファイルをインターネットに接続できる環境でダウンロードし、Bonfireと同じフォルダに保存してください。</p>
+                <ul>
+                    <li><a href="https://cdn.jsdelivr.net/npm/marked/marked.min.js" download>marked.min.js</a>
+                        (Markdown変換用)</li>
+                    <li><a href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+                            download>all.min.css</a> (アイコン用: 名前を font-awesome.css に変更推奨)</li>
+                    <li><a href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2"
+                            download>webfontsフォルダと中身</a> (アイコンフォントファイル)</li>
+                </ul>
+                <p class="note">※ FontAwesomeのローカル化は少し手間がかかるため、アイコンが不要であればスキップ可能です。</p>
+
+                <h3>手順 2: index.htmlの書き換え</h3>
+                <p>ダウンロードしたファイルを読み込むように、index.htmlの該当箇所を書き換えます。</p>
+
+                <pre><code>&lt;!-- index.html --&gt;
+&lt;!-- &lt;link rel="stylesheet" href="https://..."&gt; を削除またはコメントアウト --&gt;
+&lt;link rel="stylesheet" href="font-awesome.css"&gt;
+
+&lt;!-- &lt;script src="https://..."&gt;&lt;/script&gt; を削除またはコメントアウト --&gt;
+&lt;script src="marked.min.js"&gt;&lt;/script&gt;</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Libs -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Data Files -->
+    <script src="data.example.js"></script>
+    <script src="data.js"></script> <!-- User data overrides default if present -->
+
+    <!-- App Script -->
+    <script src="script.js"></script>
+</body>
+
+</html>
