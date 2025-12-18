@@ -6,15 +6,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputEl = document.getElementById('markdown-input');
     const editView = document.getElementById('edit-view');
     const saveBtn = document.getElementById('save-btn');
+    const discardBtn = document.getElementById('discard-btn');
     const closeEditorBtn = document.getElementById('close-editor-btn');
-    const statusMsg = document.getElementById('status-message');
     const helpBtn = document.getElementById('help-btn');
     const helpModal = document.getElementById('help-modal');
     const closeModal = document.querySelector('.close-modal');
 
+    const globalCopyBtn = document.getElementById('global-copy-btn');
+    const unsavedNotice = document.getElementById('unsaved-notice');
+    const app = document.getElementById('app');
+
     // State
     const STORAGE_KEY = 'bonfire_content';
     let isDirty = false;
+    let isUsingWebStorage = false;
 
     // --- Data Loading ---
     function loadData() {
@@ -22,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
             console.log('Loaded from WebStorage');
+            isUsingWebStorage = true;
             return saved;
         }
 
@@ -42,7 +48,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const initialContent = loadData();
     inputEl.value = initialContent;
+
+    // Initial Notice Check
+    if (isUsingWebStorage) {
+        unsavedNotice.classList.remove('hidden');
+        app.classList.add('has-notice');
+    } else {
+        unsavedNotice.classList.add('hidden');
+        app.classList.remove('has-notice');
+    }
+
     render(initialContent);
+
+    // ... (parsing logic unchanged) ...
+    // Note: I will use ReplaceChunk to avoid rewriting the whole file, targeting specific sections.
+    // Wait, I cannot use `...` in ReplacementContent. I must include the full block or use multiple ReplaceChunks.
+    // I will rewrite the Render function separately if needed, but here I am focusing on init logic.
+    // The previous view_file was small, let me just act on the init block.
 
     // --- Markdown Parser Configuration & Custom Extensions ---
 
@@ -140,16 +162,54 @@ document.addEventListener('DOMContentLoaded', () => {
         render(val);
         localStorage.setItem(STORAGE_KEY, val);
         isDirty = true;
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = '<i class="fa fa-clipboard"></i> 変更をコピーして保存';
-        statusMsg.innerText = '自動保存されました';
+        isUsingWebStorage = true; // Now we are using storage
+
+        // Show notice
+        unsavedNotice.classList.remove('hidden');
+        app.classList.add('has-notice');
+
+        saveBtn.innerHTML = '<i class="fa fa-clipboard"></i> コピー';
+        // Removed statusMsg update as requested
     });
 
-    // Copy to Clipboard
+    // Copy to Clipboard (Editor)
     saveBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(inputEl.value).then(() => {
             alert('クリップボードにコピーしました！\n\nプロジェクトフォルダの `data.js` ファイルを開き、\n`bonfireUserData` 変数の中身を書き換えて保存してください。');
         });
+    });
+
+    // Discard Changes
+    discardBtn.addEventListener('click', () => {
+        console.log('Discard button clicked');
+        if (confirm('現在の変更を全て破棄して、元のファイル（data.js またはデフォルト）の状態に戻しますか？')) {
+            localStorage.removeItem(STORAGE_KEY);
+            console.log('Storage cleared');
+
+            // Re-load default data
+            let originalContent = '';
+            if (typeof bonfireUserData !== 'undefined' && bonfireUserData) {
+                originalContent = bonfireUserData;
+            } else if (typeof bonfireDefaultData !== 'undefined') {
+                originalContent = bonfireDefaultData;
+            } else {
+                originalContent = '# Hello Bonfire\nNo data found.';
+            }
+
+            inputEl.value = originalContent;
+            render(originalContent);
+            isDirty = false;
+            isUsingWebStorage = false;
+
+            // Hide notice
+            unsavedNotice.classList.add('hidden');
+            app.classList.remove('has-notice');
+
+            // statusMsg.innerText = '変更を破棄しました'; // Removed or kept? User said remove "Auto-saved" text.
+            // Keeping "Discarded" feedback might be nice, but user wanted less noise. Let's keep it minimal.
+            // Actually, statusMsg element was removed from HTML previously! I must remove reference to it.
+            console.log('UI Reset complete');
+        }
     });
 
     // Help
@@ -158,6 +218,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     closeModal.addEventListener('click', () => {
         helpModal.classList.add('hidden');
+    });
+
+    // Global Copy (from notice bar)
+    globalCopyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(inputEl.value).then(() => {
+            alert('クリップボードにコピーしました！\n\nプロジェクトフォルダの `data.js` ファイルを開き、\n`bonfireUserData` 変数の中身を書き換えて保存してください。');
+        });
     });
 
     // Favicon Animation (Fire)

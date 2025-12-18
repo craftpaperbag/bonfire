@@ -12,6 +12,15 @@
 
 <body>
     <div id="app">
+        <!-- Persistent Notification Bar -->
+        <div id="unsaved-notice" class="notification-bar hidden">
+            <div class="notice-content">
+                <i class="fa fa-circle-exclamation"></i>
+                <span>編集中のデータ（WebStorage）を表示しています。永続化には更新が必要です。</span>
+            </div>
+            <button id="global-copy-btn" class="btn btn-sm btn-neutral"><i class="fa fa-clipboard"></i> データをコピー</button>
+        </div>
+
         <main id="main-view" class="view">
             <div id="content" class="markdown-body">
                 <!-- Converted HTML will be injected here -->
@@ -19,7 +28,8 @@
             <footer id="footer">
                 <p>Created with <a href="https://github.com/google-deepmind/bonfire" target="_blank">Bonfire</a> v1.0.0
                     | <i class="fa-solid fa-fire-flame-curved"></i></p>
-                <p>Released under the MIT License</p>
+                <p>Released under the MIT License | Editor: <span class="kbd">Ctrl</span> + <span class="kbd">B</span>
+                </p>
             </footer>
         </main>
 
@@ -28,12 +38,15 @@
                 <div class="editor-header">
                     <h2>Editor</h2>
                     <div class="actions">
-                        <button id="save-btn" class="btn" disabled><i class="fa fa-clipboard"></i> コピーして保存準備</button>
-                        <button id="close-editor-btn" class="btn"><i class="fa fa-times"></i></button>
+                        <button id="discard-btn" class="btn btn-outline-danger" title="変更を破棄して元に戻す"><i
+                                class="fa fa-trash-can"></i></button>
+                        <button id="save-btn" class="btn btn-neutral"><i class="fa fa-clipboard"></i> コピー</button>
+                        <button id="close-editor-btn" class="btn btn-icon btn-subtle" title="エディタを閉じる"><i
+                                class="fa fa-chevron-right"></i></button>
                     </div>
                 </div>
                 <textarea id="markdown-input" placeholder="Markdownを入力してください..."></textarea>
-                <div id="status-message"></div>
+                <!-- Removed status status message as requested -->
 
                 <div class="local-mode-help">
                     <button id="help-btn" class="btn-text">完全ローカルモードの設定方法</button>

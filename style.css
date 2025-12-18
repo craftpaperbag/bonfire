@@ -131,6 +131,13 @@ a:hover {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.actions {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
 }
 
 textarea {
@@ -153,23 +160,138 @@ textarea:focus {
 
 /* Components */
 .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background-color: var(--accent-color);
     color: #1a1a1a;
-    border: none;
+    border: 1px solid var(--accent-color);
     padding: 0.5rem 1rem;
     border-radius: var(--border-radius);
     cursor: pointer;
     font-weight: bold;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    height: 38px;
+    /* Fixed height for alignment */
+    white-space: nowrap;
+}
+
+.btn i {
+    margin-right: 0.5rem;
+}
+
+.btn-icon i {
+    margin-right: 0;
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--accent-color);
+}
+
+.btn-outline:hover {
+    background-color: rgba(255, 159, 67, 0.1);
 }
 
 .btn:disabled {
     background-color: var(--muted-text);
+    border-color: var(--muted-text);
     cursor: not-allowed;
 }
 
 .btn:hover:not(:disabled) {
     background-color: var(--accent-hover);
+}
+
+/* Notification Bar */
+.notification-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    border-bottom: 2px solid var(--accent-color);
+    padding: 0.75rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 900;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.notice-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+#app.has-notice #main-view {
+    margin-top: 60px;
+    /* Space for banner */
+}
+
+#app.has-notice #edit-view {
+    top: 60px;
+    height: calc(100% - 60px);
+}
+
+@media (max-width: 768px) {
+    .notification-bar {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+        padding: 0.5rem;
+    }
+
+    #app.has-notice #main-view {
+        margin-top: 90px;
+    }
+
+    #app.has-notice #edit-view {
+        top: auto;
+        height: 50%;
+    }
+}
+
+/* Keyboard Hint */
+.kbd {
+    background-color: var(--card-border);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.85em;
+    border: 1px solid #555;
+    box-shadow: 0 2px 0 #000;
+}
+
+/* Button Variants */
+.btn-neutral {
+    background-color: var(--card-border);
+    color: var(--text-color);
+    border-color: var(--card-border);
+}
+
+.btn-neutral:hover {
+    background-color: #555;
+}
+
+.btn-outline-danger {
+    background-color: transparent;
+    color: #ff6b6b;
+    /* Soft Red */
+    border: 1px solid #ff6b6b;
+}
+
+.btn-outline-danger:hover {
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+.btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.9rem;
+    height: 32px;
 }
 
 .btn-text {
@@ -332,4 +454,23 @@ textarea:focus {
 
 .close-modal:hover {
     color: var(--accent-color);
+}
+
+.btn-subtle {
+    background-color: transparent !important;
+    color: var(--muted-text) !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.btn-subtle:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: var(--text-color) !important;
+}
+
+@media (max-width: 768px) {
+    .btn-subtle i {
+        transform: rotate(90deg);
+        /* Point down on mobile */
+    }
 }
