@@ -1,0 +1,335 @@
+:root {
+    /* Color Palette - Dark Mode Default */
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --accent-color: #ff9f43;
+    /* Warm Orange */
+    --accent-hover: #ffb775;
+    --card-bg: #2d2d2d;
+    --card-border: #404040;
+    --secondary-bg: #121212;
+    --muted-text: #888;
+    --code-bg: #111;
+    --border-radius: 8px;
+    --spacing-unit: 1rem;
+    --editor-width: 50%;
+    --footer-height: 50px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow-x: hidden;
+    height: 100vh;
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: var(--accent-hover);
+}
+
+/* Layout */
+#app {
+    display: flex;
+    height: 100%;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+#main-view {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    transition: width 0.3s ease, margin-right 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#content {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Footer */
+#footer {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--muted-text);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--card-border);
+    margin-top: 2rem;
+}
+
+/* Editor (Off-canvas / Split) */
+#edit-view {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: var(--editor-width);
+    height: 100%;
+    background-color: var(--secondary-bg);
+    border-left: 1px solid var(--card-border);
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+}
+
+#edit-view.hidden {
+    transform: translateX(100%);
+}
+
+/* Off-canvas behavior on small screens */
+@media (max-width: 768px) {
+    :root {
+        --editor-width: 100%;
+    }
+
+    #edit-view {
+        width: 100%;
+        height: 50%;
+        /* Half screen on mobile? Or full? Let's say bottom half for now based on user req "offcanvas at bottom" */
+        top: auto;
+        bottom: 0;
+        border-left: none;
+        border-top: 1px solid var(--card-border);
+        transform: translateY(0);
+    }
+
+    #edit-view.hidden {
+        transform: translateY(100%);
+        /* Reset X transform for Y transition */
+        transform: translateY(100%);
+    }
+}
+
+.editor-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1rem;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+textarea {
+    flex: 1;
+    width: 100%;
+    background-color: var(--code-bg);
+    color: var(--text-color);
+    border: 1px solid var(--card-border);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    font-family: monospace;
+    font-size: 14px;
+    resize: none;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+/* Components */
+.btn {
+    background-color: var(--accent-color);
+    color: #1a1a1a;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.btn:disabled {
+    background-color: var(--muted-text);
+    cursor: not-allowed;
+}
+
+.btn:hover:not(:disabled) {
+    background-color: var(--accent-hover);
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--muted-text);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+/* Markdown Content Styles */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+    margin-bottom: 1rem;
+    color: var(--accent-color);
+}
+
+.markdown-body h1 {
+    font-size: 2.5rem;
+    border-bottom: 2px solid var(--card-border);
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+}
+
+.markdown-body h2 {
+    font-size: 1.8rem;
+    margin-top: 2rem;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 0.3rem;
+}
+
+.markdown-body p {
+    margin-bottom: 1rem;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+    margin-left: 0;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.markdown-body li {
+    margin-bottom: 0.25rem;
+}
+
+.markdown-body li>ul,
+.markdown-body li>ol {
+    margin-bottom: 0;
+}
+
+/* Custom Cards */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-color);
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: var(--accent-color);
+}
+
+/* Custom Grid */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    max-width: 700px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.help-body h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent-color);
+}
+
+.help-body code {
+    background-color: var(--code-bg);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.help-body pre {
+    background-color: var(--code-bg);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px solid var(--card-border);
+}
+
+.help-body pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+.note {
+    font-size: 0.9rem;
+    color: var(--muted-text);
+    margin-top: 0.5rem;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--muted-text);
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: var(--accent-color);
+}
