@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const helpModal = document.getElementById('help-modal');
     const iconModal = document.getElementById('icon-modal');
     const iconSelectorBtn = document.getElementById('icon-selector-btn');
+    const floatingEditBtn = document.getElementById('floating-edit-btn');
     const closeModals = document.querySelectorAll('.close-modal');
 
     const globalCopyBtn = document.getElementById('global-copy-btn');
@@ -169,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleEditor() {
         editView.classList.toggle('hidden');
         if (!editView.classList.contains('hidden')) {
+            floatingEditBtn.classList.add('hidden');
             // Adjust main view width if desktop
             // This logic needs to match CSS media queries
             if (window.innerWidth > 768) {
@@ -176,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             inputEl.focus();
         } else {
+            floatingEditBtn.classList.remove('hidden');
             document.getElementById('main-view').style.marginRight = '0';
         }
     }
@@ -189,6 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     closeEditorBtn.addEventListener('click', toggleEditor);
+    floatingEditBtn.addEventListener('click', toggleEditor);
 
     // Auto-save & Preview
     inputEl.addEventListener('input', (e) => {
