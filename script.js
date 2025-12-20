@@ -90,6 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return `<img src="images/${filename}" alt="${filename}" class="${className}">`;
         });
 
+        // Muted Text: (text)
+        // Use negative lookbehind to avoid matching Markdown links [label](url)
+        processed = processed.replace(/(?<!\])\(([^)]+)\)/g, '<span class="muted-text">$1</span>');
+
         // Block Elements
         // Center Container
         processed = processed.replace(/:::\s*center\s*\n([\s\S]*?)\n:::/gm, (match, content) => {

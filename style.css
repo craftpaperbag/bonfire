@@ -443,6 +443,12 @@ textarea:focus {
     margin-right: auto;
 }
 
+/* Muted Text */
+.muted-text {
+    color: var(--muted-text);
+    font-size: 0.9em;
+}
+
 /* Utilities */
 .hidden {
     display: none !important;
