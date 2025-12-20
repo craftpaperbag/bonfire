@@ -206,17 +206,17 @@ textarea:focus {
 /* Notification Bar */
 .notification-bar {
     position: fixed;
-    top: 0;
+    bottom: 0;
     left: 0;
     width: 100%;
     background-color: #333;
-    border-bottom: 2px solid var(--accent-color);
+    border-top: 2px solid var(--accent-color);
     padding: 0.75rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 900;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .notice-content {
@@ -228,12 +228,11 @@ textarea:focus {
 }
 
 #app.has-notice #main-view {
-    margin-top: 60px;
+    margin-bottom: 60px;
     /* Space for banner */
 }
 
 #app.has-notice #edit-view {
-    top: 60px;
     height: calc(100% - 60px);
 }
 
@@ -246,12 +245,12 @@ textarea:focus {
     }
 
     #app.has-notice #main-view {
-        margin-top: 90px;
+        margin-bottom: 90px;
     }
 
     #app.has-notice #edit-view {
-        top: auto;
-        height: 50%;
+        bottom: 90px;
+        height: calc(50% - 90px);
     }
 }
 

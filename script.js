@@ -255,42 +255,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Favicon Animation (Fire)
-    // Simple canvas animation synced to title
-    const canvas = document.createElement('canvas');
-    canvas.width = 32;
-    canvas.height = 32;
-    const ctx = canvas.getContext('2d');
-    const link = document.createElement('link');
-    link.type = 'image/x-icon';
-    link.rel = 'shortcut icon';
-    document.getElementsByTagName('head')[0].appendChild(link);
+    // Favicon (🔥)
+    function setStaticFavicon() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 32;
+        canvas.height = 32;
+        const ctx = canvas.getContext('2d');
+        const link = document.createElement('link');
+        link.type = 'image/x-icon';
+        link.rel = 'shortcut icon';
+        document.getElementsByTagName('head')[0].appendChild(link);
 
-    let frame = 0;
-    function animateFavicon() {
-        ctx.clearRect(0, 0, 32, 32);
-
-        // Base
-        ctx.fillStyle = '#ff4500'; // OrangeRed
-        ctx.beginPath();
-        ctx.arc(16, 28, 10, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Flickering Flame
-        const height = 15 + Math.sin(frame * 0.5) * 5 + Math.random() * 5;
-        const width = 10 + Math.cos(frame * 0.3) * 2;
-
-        ctx.fillStyle = '#ff8c00'; // DarkOrange
-        ctx.beginPath();
-        ctx.moveTo(16 - width / 2, 28);
-        ctx.quadraticCurveTo(16, 28 - height, 16 + width / 2, 28);
-        ctx.fill();
+        ctx.font = '24px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🔥', 16, 18);
 
         link.href = canvas.toDataURL("image/x-icon");
-        frame++;
-
-        // Lower frame rate for favicon to save CPU? Or normal.
-        setTimeout(animateFavicon, 200);
     }
-    animateFavicon();
+    setStaticFavicon();
 });
