@@ -103,6 +103,23 @@ document.addEventListener('DOMContentLoaded', () => {
             return `<div class="card"><div class="card-title">${title}</div><div class="card-body">\n${innerHtml}\n</div></div>`;
         });
 
+        // Link Cards
+        processed = processed.replace(/:::\s*link\s*([^\n]*)\n([\s\S]*?)\n:::/gm, (match, linkData, content) => {
+            let url = linkData.trim();
+            let alt = '';
+
+            // Match [alt](url) format
+            const altMatch = url.match(/^\[(.*?)\]\((.*?)\)$/);
+            if (altMatch) {
+                alt = altMatch[1];
+                url = altMatch[2];
+            }
+
+            const innerHtml = typeof marked !== 'undefined' ? marked.parse(content) : content;
+            const ariaAttr = alt ? ` aria-label="${alt}"` : '';
+            return `<a href="${url}" class="link-card"${ariaAttr} target="_blank">\n${innerHtml}\n</a>`;
+        });
+
         // Grids
         processed = processed.replace(/:::\s*grid\s*\n([\s\S]*?)\n:::/gm, (match, content) => {
             const parts = content.split(/^\s*\|\s*$/gm);

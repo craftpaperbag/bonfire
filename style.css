@@ -353,12 +353,6 @@ textarea:focus {
     padding: 1.5rem;
     margin-bottom: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-    border-color: var(--accent-color);
 }
 
 .card-title {
@@ -366,6 +360,46 @@ textarea:focus {
     font-weight: bold;
     margin-bottom: 1rem;
     color: var(--accent-color);
+}
+
+/* Link Cards */
+.link-card {
+    display: block;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-decoration: none;
+    color: inherit;
+}
+
+.link-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-color);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 159, 67, 0.1);
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.link-card h3 {
+    margin-top: 0.5rem;
+    color: var(--accent-color);
+}
+
+.link-card p {
+    margin-bottom: 0;
+    color: var(--text-color);
+}
+
+.link-card img {
+    margin-top: 0;
+}
+
+/* Specific rounding for basic images only */
+.link-card img:not(.profile-image):not(.rounded-image) {
+    border-radius: calc(var(--border-radius) / 2);
 }
 
 /* Custom Grid */
