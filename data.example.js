@@ -6,13 +6,13 @@ Ctrl + B で編集画面を開いて、このテキストを自由に書き換�
 
 ::: grid
 ::: card よく使うツール
-- [GitHub](https://github.com) icon:github
-- [Google](https://google.com) icon:google
+- [GitHub](https://github.com) icon:home
+- [Google](https://google.com) icon:earth
 - [ChatGPT](https://chatgpt.com) icon:robot
 :::
 
 ::: card プロジェクト
-- [Bonfire Repo](https://github.com/google-deepmind/bonfire)
+- [Bonfire Repo](https://github.com/craftpaperbag/bonfire)
 - [Design System](https://example.com)
 :::
 :::
