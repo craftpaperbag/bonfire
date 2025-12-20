@@ -1,14 +1,14 @@
 const bonfireDefaultData = `
-# Welcome to Bonfire 🔥
+# Bonfire 🔥
 
 毎日の活動の拠点となる、あなただけのリンク集へようこそ。
 Ctrl + B で編集画面を開いて、このテキストを自由に書き換えてください。
 
 ::: grid
 ::: card よく使うツール
-- [GitHub](https://github.com) icon:fa-github
-- [Google](https://google.com) icon:fa-google
-- [ChatGPT](https://chatgpt.com) icon:fa-robot
+- [GitHub](https://github.com) icon:github
+- [Google](https://google.com) icon:google
+- [ChatGPT](https://chatgpt.com) icon:robot
 :::
 
 ::: card プロジェクト
@@ -27,6 +27,6 @@ Ctrl + B で編集画面を開いて、このテキストを自由に書き換�
 
 - **カード**: \`::: card タイトル ... :::\` で囲むとカードになります。
 - **グリッド**: \`::: grid ... :::\` で囲むと、中のカードがグリッド状に並びます。
-- **アイコン**: \`icon:fa-アイコン名\` でFontAwesomeのアイコンを表示できます。
+- **アイコン**: \`icon:アイコン名\` でFontAwesomeのアイコンを表示できます。
 - **画像**: \`image:ファイル名\` で \`images/\` フォルダの画像を表示できます。
 `;

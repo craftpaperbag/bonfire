@@ -38,6 +38,8 @@
                 <div class="editor-header">
                     <h2>Editor</h2>
                     <div class="actions">
+                        <button id="icon-selector-btn" class="btn btn-neutral" title="アイコン一覧"><i
+                                class="fa fa-face-smile"></i></button>
                         <button id="discard-btn" class="btn btn-outline-danger" title="変更を破棄して元に戻す"><i
                                 class="fa fa-trash-can"></i></button>
                         <button id="save-btn" class="btn btn-neutral"><i class="fa fa-clipboard"></i> コピー</button>
@@ -46,13 +48,22 @@
                     </div>
                 </div>
                 <textarea id="markdown-input" placeholder="Markdownを入力してください..."></textarea>
-                <!-- Removed status status message as requested -->
-
                 <div class="local-mode-help">
                     <button id="help-btn" class="btn-text">完全ローカルモードの設定方法</button>
                 </div>
             </div>
         </aside>
+    </div>
+
+    <div id="icon-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>アイコン一覧</h2>
+            <p class="note">クリックするとアイコン名をコピーします。Markdownで <code>icon:xxxxx</code> と入力して使用できます。</p>
+            <div id="icon-grid" class="icon-grid">
+                <!-- Icons will be injected here -->
+            </div>
+        </div>
     </div>
 
     <div id="help-modal" class="modal hidden">

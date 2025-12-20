@@ -10,7 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeEditorBtn = document.getElementById('close-editor-btn');
     const helpBtn = document.getElementById('help-btn');
     const helpModal = document.getElementById('help-modal');
-    const closeModal = document.querySelector('.close-modal');
+    const iconModal = document.getElementById('icon-modal');
+    const iconSelectorBtn = document.getElementById('icon-selector-btn');
+    const closeModals = document.querySelectorAll('.close-modal');
 
     const globalCopyBtn = document.getElementById('global-copy-btn');
     const unsavedNotice = document.getElementById('unsaved-notice');
@@ -81,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. Custom Syntax Replacements (Inline elements first)
         // Icons
-        processed = processed.replace(/icon:fa-([a-z0-9-]+)/g, '<i class="fa-solid fa-$1"></i>');
+        processed = processed.replace(/icon:([a-z0-9-]+)/g, '<i class="fa-solid fa-$1"></i>');
 
         // Images
         // Support image:filename (rounded) and image@:filename (circular profile)
@@ -244,12 +246,62 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Help
+    // Help & Icon Modal
     helpBtn.addEventListener('click', () => {
         helpModal.classList.remove('hidden');
     });
-    closeModal.addEventListener('click', () => {
-        helpModal.classList.add('hidden');
+
+    iconSelectorBtn.addEventListener('click', () => {
+        iconModal.classList.remove('hidden');
+    });
+
+    closeModals.forEach(btn => {
+        btn.addEventListener('click', () => {
+            helpModal.classList.add('hidden');
+            iconModal.classList.add('hidden');
+        });
+    });
+
+    // Close on background click
+    window.addEventListener('click', (e) => {
+        if (e.target === helpModal) helpModal.classList.add('hidden');
+        if (e.target === iconModal) iconModal.classList.add('hidden');
+    });
+
+    // Icon Grid Population
+    const majorIcons = [
+        'house', 'user', 'check', 'heart', 'star', 'gear', 'trash-can', 'pen', 'envelope', 'phone',
+        'camera', 'image', 'music', 'video', 'folder', 'file', 'magnifying-glass',
+        'arrow-right', 'arrow-left', 'arrow-up', 'arrow-down', 'plus', 'minus', 'xmark',
+        'check-double', 'circle-info', 'circle-question', 'circle-exclamation', 'triangle-exclamation',
+        'graduation-cap', 'book', 'bookmark', 'calendar-days', 'clock', 'bell', 'lightbulb',
+        'ghost', 'fire', 'snowflake', 'sun', 'moon', 'tree', 'cloud', 'droplet', 'wind',
+        'burger', 'pizza-slice', 'apple-whole', 'mug-hot', 'wine-glass',
+        'car', 'plane', 'bicycle', 'train', 'ship', 'earth-americas', 'globe'
+    ];
+
+    const iconGrid = document.getElementById('icon-grid');
+    majorIcons.forEach(name => {
+        const item = document.createElement('div');
+        item.className = 'icon-item';
+        item.innerHTML = `
+            <i class="fa-solid fa-${name}"></i>
+            <span>${name}</span>
+        `;
+        item.addEventListener('click', () => {
+            const copyText = `icon:${name}`;
+            navigator.clipboard.writeText(copyText).then(() => {
+                const originalContent = item.innerHTML;
+                item.innerHTML = `
+                    <i class="fa-solid fa-check" style="color: #4cd137;"></i>
+                    <span style="color: #4cd137;">Copied!</span>
+                `;
+                setTimeout(() => {
+                    item.innerHTML = originalContent;
+                }, 1000);
+            });
+        });
+        iconGrid.appendChild(item);
     });
 
     // Global Copy (from notice bar)
