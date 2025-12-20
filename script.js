@@ -18,11 +18,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const globalCopyBtn = document.getElementById('global-copy-btn');
     const unsavedNotice = document.getElementById('unsaved-notice');
     const app = document.getElementById('app');
+    const themeToggleBtn = document.getElementById('theme-toggle');
 
     // State
     const STORAGE_KEY = 'bonfire_content';
+    const THEME_KEY = 'bonfire_theme';
     let isDirty = false;
     let isUsingWebStorage = false;
+
+    // --- Theme Logic ---
+    function initTheme() {
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        } else {
+            document.body.classList.remove('light-mode');
+            themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        }
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+        themeToggleBtn.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+    });
+
+    initTheme();
 
     // --- Data Loading ---
     function loadData() {

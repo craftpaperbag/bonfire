@@ -14,6 +14,22 @@
     --spacing-unit: 1rem;
     --editor-width: 50%;
     --footer-height: 50px;
+    --btn-text: #1a1a1a;
+    --notice-bg: #333;
+}
+
+body.light-mode {
+    --bg-color: #f8f9fa;
+    --text-color: #212529;
+    --accent-color: #d35400;
+    --accent-hover: #e67e22;
+    --card-bg: #ffffff;
+    --card-border: #dee2e6;
+    --secondary-bg: #f8f9fa;
+    --muted-text: #6c757d;
+    --code-bg: #ffffff;
+    --btn-text: #ffffff;
+    --notice-bg: #e9ecef;
 }
 
 * {
@@ -164,7 +180,7 @@ textarea:focus {
     align-items: center;
     justify-content: center;
     background-color: var(--accent-color);
-    color: #1a1a1a;
+    color: var(--btn-text);
     border: 1px solid var(--accent-color);
     padding: 0.5rem 1rem;
     border-radius: var(--border-radius);
@@ -209,7 +225,7 @@ textarea:focus {
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #333;
+    background-color: var(--notice-bg);
     border-top: 2px solid var(--accent-color);
     padding: 0.75rem 2rem;
     display: flex;
@@ -547,6 +563,7 @@ textarea:focus {
         /* Point down on mobile */
     }
 }
+
 /* Icon Selector Styles */
 .icon-grid {
     display: grid;
@@ -589,47 +606,104 @@ textarea:focus {
 /* Floating Edit Button */
 .btn-floating {
     position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 48px;
-    height: 48px;
+    bottom: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background-color: rgba(45, 45, 45, 0.8);
-    backdrop-filter: blur(8px);
+    background-color: var(--card-bg);
     border: 1px solid var(--card-border);
-    color: var(--accent-color);
+    color: var(--muted-text);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    box-shadow: none;
     z-index: 800;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0.5;
-    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+    font-size: 0.9rem;
 }
 
 .btn-floating:hover {
     opacity: 1;
-    transform: scale(1.1);
+    transform: none;
     background-color: var(--card-bg);
     border-color: var(--accent-color);
-    box-shadow: 0 6px 20px rgba(255, 159, 67, 0.3);
+    color: var(--accent-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+body.light-mode .btn-floating {
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 #app.has-notice .btn-floating {
-    bottom: calc(2rem + 60px);
+    bottom: calc(1rem + 60px);
 }
+
+/* Removed redundant block */
 
 @media (max-width: 768px) {
     .btn-floating {
-        bottom: 1.5rem;
-        right: 1.5rem;
-        width: 44px;
-        height: 44px;
+        bottom: 0.75rem;
+        right: 0.75rem;
+        width: 32px;
+        height: 32px;
+        font-size: 0.85rem;
     }
-    
+
     #app.has-notice .btn-floating {
-        bottom: calc(1.5rem + 90px);
+        bottom: calc(0.75rem + 90px);
+    }
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--muted-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+    font-size: 0.9rem;
+}
+
+/* Move toggle when editor is open on desktop */
+@media (min-width: 769px) {
+    #main-view:has(~ #edit-view:not(.hidden)) .theme-toggle {
+        right: calc(var(--editor-width) + 1rem);
+    }
+}
+
+.theme-toggle:hover {
+    opacity: 1;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+body.light-mode .theme-toggle {
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+    .theme-toggle {
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 32px;
+        height: 32px;
     }
 }
