@@ -4,29 +4,38 @@ const bonfireDefaultData = `
 毎日の活動の拠点となる、あなただけのリンク集へようこそ。
 Ctrl + B で編集画面を開いて、このテキストを自由に書き換えてください。
 
+::: center
+image@:profile.png
+### Your Name
+こんにちは。Bonfireへようこそ！
+:::
+
 ::: grid
 ::: card よく使うツール
-- [GitHub](https://github.com) icon:home
-- [Google](https://google.com) icon:earth
-- [ChatGPT](https://chatgpt.com) icon:robot
+- [GitHub](https://github.com) icon:house
+- [Google](https://google.com) icon:globe
+- [ChatGPT](https://chatgpt.com) icon:gear
 :::
 
 ::: card プロジェクト
-- [Bonfire Repo](https://github.com/craftpaperbag/bonfire)
-- [Design System](https://example.com)
+- [Bonfire Repo](https://github.com/craftpaperbag/bonfire) icon:fire
+- [Design System](https://example.com) icon:pen
 :::
 :::
 
-## Bonfireの使い方
+## リンクカード
+::: link [Bonfire Repository](https://github.com/craftpaperbag/bonfire)
+### Bonfire 🔥
+Bonfireはミニマルな個人用ポータルサイトです。Markdownで簡単に自分だけのページを作成できます。
+:::
 
-1. **編集する**: Ctrl + B でエディタを開きます。
-2. **保存する**: 入力内容は自動的にブラウザに保存されます。
-3. **永続化する**: 「変更をコピーして保存」ボタンを押し、\`.js\`ファイルに貼り付けることで、データを完全に固定できます。
-
-### 記法ガイド
+## 記法ガイド
 
 - **カード**: \`::: card タイトル ... :::\` で囲むとカードになります。
 - **グリッド**: \`::: grid ... :::\` で囲むと、中のカードがグリッド状に並びます。
+- **センター**: \`::: center ... :::\` でテキストや画像を中央寄せにします。
+- **リンクカード**: \`::: link URL ... :::\` でリンクカードを作成します。
 - **アイコン**: \`icon:アイコン名\` でFontAwesomeのアイコンを表示できます。
-- **画像**: \`image:ファイル名\` で \`images/\` フォルダの画像を表示できます。
+- **画像**: \`image:ファイル名\` で画像を丸角に、\`image@:ファイル名\` で円形のプロフィール画像になります。
+- **補足テキスト**: 半角の括弧 \`( )\` で囲むと、控えめな色で表示されます。
 `;
