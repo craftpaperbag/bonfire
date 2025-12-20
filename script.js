@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         processed = processed.replace(/icon:fa-([a-z0-9-]+)/g, '<i class="fa-solid fa-$1"></i>');
 
         // Images
-        processed = processed.replace(/image:([^\s]+)/g, '<img src="images/$1" alt="$1">');
+        processed = processed.replace(/image:([^\s]+)/g, '<img src="images/$1" alt="$1" class="rounded-image">');
 
         // 3. Restore protected code
         for (let i = placeholders.length - 1; i >= 0; i--) {
