@@ -10,16 +10,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeEditorBtn = document.getElementById('close-editor-btn');
     const helpBtn = document.getElementById('help-btn');
     const helpModal = document.getElementById('help-modal');
-    const closeModal = document.querySelector('.close-modal');
+    const iconModal = document.getElementById('icon-modal');
+    const iconSelectorBtn = document.getElementById('icon-selector-btn');
+    const floatingEditBtn = document.getElementById('floating-edit-btn');
+    const closeModals = document.querySelectorAll('.close-modal');
 
     const globalCopyBtn = document.getElementById('global-copy-btn');
     const unsavedNotice = document.getElementById('unsaved-notice');
     const app = document.getElementById('app');
+    const themeToggleBtn = document.getElementById('theme-toggle');
 
     // State
     const STORAGE_KEY = 'bonfire_content';
+    const THEME_KEY = 'bonfire_theme';
     let isDirty = false;
     let isUsingWebStorage = false;
+
+    // --- Theme Logic ---
+    function initTheme() {
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        } else {
+            document.body.classList.remove('light-mode');
+            themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        }
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+        themeToggleBtn.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+    });
+
+    initTheme();
 
     // --- Data Loading ---
     function loadData() {
@@ -79,11 +105,49 @@ document.addEventListener('DOMContentLoaded', () => {
             return id;
         });
 
-        // 2. Custom Syntax Replacements
+        // 2. Custom Syntax Replacements (Inline elements first)
+        // Icons
+        processed = processed.replace(/icon:([a-z0-9-]+)/g, '<i class="fa-solid fa-$1"></i>');
+
+        // Images
+        // Support image:filename (rounded) and image@:filename (circular profile)
+        processed = processed.replace(/image(@?):([a-zA-Z0-9._-]+)/g, (match, at, filename) => {
+            const className = at === '@' ? 'profile-image' : 'rounded-image';
+            return `<img src="images/${filename}" alt="${filename}" class="${className}">`;
+        });
+
+        // Muted Text: (text)
+        // Use negative lookbehind to avoid matching Markdown links [label](url)
+        processed = processed.replace(/(?<!\])\(([^)]+)\)/g, '<span class="muted-text">$1</span>');
+
+        // Block Elements
+        // Center Container
+        processed = processed.replace(/:::\s*center\s*\n([\s\S]*?)\n:::/gm, (match, content) => {
+            const innerHtml = typeof marked !== 'undefined' ? marked.parse(content) : content;
+            return `<div class="center-container">\n${innerHtml}\n</div>`;
+        });
+
         // Cards
         processed = processed.replace(/:::\s*card\s*([^\n]*)\n([\s\S]*?)\n:::/gm, (match, title, content) => {
             const innerHtml = typeof marked !== 'undefined' ? marked.parse(content) : content;
             return `<div class="card"><div class="card-title">${title}</div><div class="card-body">\n${innerHtml}\n</div></div>`;
+        });
+
+        // Link Cards
+        processed = processed.replace(/:::\s*link\s*([^\n]*)\n([\s\S]*?)\n:::/gm, (match, linkData, content) => {
+            let url = linkData.trim();
+            let alt = '';
+
+            // Match [alt](url) format
+            const altMatch = url.match(/^\[(.*?)\]\((.*?)\)$/);
+            if (altMatch) {
+                alt = altMatch[1];
+                url = altMatch[2];
+            }
+
+            const innerHtml = typeof marked !== 'undefined' ? marked.parse(content) : content;
+            const ariaAttr = alt ? ` aria-label="${alt}"` : '';
+            return `<a href="${url}" class="link-card"${ariaAttr} target="_blank">\n${innerHtml}\n</a>`;
         });
 
         // Grids
@@ -98,12 +162,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return `<div class="grid-container">\n${content}\n</div>`;
         });
-
-        // Icons
-        processed = processed.replace(/icon:fa-([a-z0-9-]+)/g, '<i class="fa-solid fa-$1"></i>');
-
-        // Images
-        processed = processed.replace(/image:([^\s]+)/g, '<img src="images/$1" alt="$1">');
 
         // 3. Restore protected code
         for (let i = placeholders.length - 1; i >= 0; i--) {
@@ -135,6 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleEditor() {
         editView.classList.toggle('hidden');
         if (!editView.classList.contains('hidden')) {
+            floatingEditBtn.classList.add('hidden');
             // Adjust main view width if desktop
             // This logic needs to match CSS media queries
             if (window.innerWidth > 768) {
@@ -142,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             inputEl.focus();
         } else {
+            floatingEditBtn.classList.remove('hidden');
             document.getElementById('main-view').style.marginRight = '0';
         }
     }
@@ -155,6 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     closeEditorBtn.addEventListener('click', toggleEditor);
+    floatingEditBtn.addEventListener('click', toggleEditor);
 
     // Auto-save & Preview
     inputEl.addEventListener('input', (e) => {
@@ -212,12 +273,62 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Help
+    // Help & Icon Modal
     helpBtn.addEventListener('click', () => {
         helpModal.classList.remove('hidden');
     });
-    closeModal.addEventListener('click', () => {
-        helpModal.classList.add('hidden');
+
+    iconSelectorBtn.addEventListener('click', () => {
+        iconModal.classList.remove('hidden');
+    });
+
+    closeModals.forEach(btn => {
+        btn.addEventListener('click', () => {
+            helpModal.classList.add('hidden');
+            iconModal.classList.add('hidden');
+        });
+    });
+
+    // Close on background click
+    window.addEventListener('click', (e) => {
+        if (e.target === helpModal) helpModal.classList.add('hidden');
+        if (e.target === iconModal) iconModal.classList.add('hidden');
+    });
+
+    // Icon Grid Population
+    const majorIcons = [
+        'house', 'user', 'check', 'heart', 'star', 'gear', 'trash-can', 'pen', 'envelope', 'phone',
+        'camera', 'image', 'music', 'video', 'folder', 'file', 'magnifying-glass',
+        'arrow-right', 'arrow-left', 'arrow-up', 'arrow-down', 'plus', 'minus', 'xmark',
+        'check-double', 'circle-info', 'circle-question', 'circle-exclamation', 'triangle-exclamation',
+        'graduation-cap', 'book', 'bookmark', 'calendar-days', 'clock', 'bell', 'lightbulb',
+        'ghost', 'fire', 'snowflake', 'sun', 'moon', 'tree', 'cloud', 'droplet', 'wind',
+        'burger', 'pizza-slice', 'apple-whole', 'mug-hot', 'wine-glass',
+        'car', 'plane', 'bicycle', 'train', 'ship', 'earth-americas', 'globe'
+    ];
+
+    const iconGrid = document.getElementById('icon-grid');
+    majorIcons.forEach(name => {
+        const item = document.createElement('div');
+        item.className = 'icon-item';
+        item.innerHTML = `
+            <i class="fa-solid fa-${name}"></i>
+            <span>${name}</span>
+        `;
+        item.addEventListener('click', () => {
+            const copyText = `icon:${name}`;
+            navigator.clipboard.writeText(copyText).then(() => {
+                const originalContent = item.innerHTML;
+                item.innerHTML = `
+                    <i class="fa-solid fa-check" style="color: #4cd137;"></i>
+                    <span style="color: #4cd137;">Copied!</span>
+                `;
+                setTimeout(() => {
+                    item.innerHTML = originalContent;
+                }, 1000);
+            });
+        });
+        iconGrid.appendChild(item);
     });
 
     // Global Copy (from notice bar)
@@ -227,42 +338,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Favicon Animation (Fire)
-    // Simple canvas animation synced to title
-    const canvas = document.createElement('canvas');
-    canvas.width = 32;
-    canvas.height = 32;
-    const ctx = canvas.getContext('2d');
-    const link = document.createElement('link');
-    link.type = 'image/x-icon';
-    link.rel = 'shortcut icon';
-    document.getElementsByTagName('head')[0].appendChild(link);
+    // Favicon (🔥)
+    function setStaticFavicon() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 32;
+        canvas.height = 32;
+        const ctx = canvas.getContext('2d');
+        const link = document.createElement('link');
+        link.type = 'image/x-icon';
+        link.rel = 'shortcut icon';
+        document.getElementsByTagName('head')[0].appendChild(link);
 
-    let frame = 0;
-    function animateFavicon() {
-        ctx.clearRect(0, 0, 32, 32);
-
-        // Base
-        ctx.fillStyle = '#ff4500'; // OrangeRed
-        ctx.beginPath();
-        ctx.arc(16, 28, 10, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Flickering Flame
-        const height = 15 + Math.sin(frame * 0.5) * 5 + Math.random() * 5;
-        const width = 10 + Math.cos(frame * 0.3) * 2;
-
-        ctx.fillStyle = '#ff8c00'; // DarkOrange
-        ctx.beginPath();
-        ctx.moveTo(16 - width / 2, 28);
-        ctx.quadraticCurveTo(16, 28 - height, 16 + width / 2, 28);
-        ctx.fill();
+        ctx.font = '24px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🔥', 16, 18);
 
         link.href = canvas.toDataURL("image/x-icon");
-        frame++;
-
-        // Lower frame rate for favicon to save CPU? Or normal.
-        setTimeout(animateFavicon, 200);
     }
-    animateFavicon();
+    setStaticFavicon();
 });

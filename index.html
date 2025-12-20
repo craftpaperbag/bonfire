@@ -16,17 +16,20 @@
         <div id="unsaved-notice" class="notification-bar hidden">
             <div class="notice-content">
                 <i class="fa fa-circle-exclamation"></i>
-                <span>編集中のデータ（WebStorage）を表示しています。永続化には更新が必要です。</span>
+                <span>ブラウザの一時保存データを表示しています。ファイルに反映して永続化してください。</span>
             </div>
             <button id="global-copy-btn" class="btn btn-sm btn-neutral"><i class="fa fa-clipboard"></i> データをコピー</button>
         </div>
 
         <main id="main-view" class="view">
+            <button id="theme-toggle" class="theme-toggle" title="テーマを切り替える">
+                <i class="fa-solid fa-moon"></i>
+            </button>
             <div id="content" class="markdown-body">
                 <!-- Converted HTML will be injected here -->
             </div>
             <footer id="footer">
-                <p>Created with <a href="https://github.com/google-deepmind/bonfire" target="_blank">Bonfire</a> v1.0.0
+                <p>Created with <a href="https://github.com/craftpaperbag/bonfire" target="_blank">Bonfire</a> v1.0.0
                     | <i class="fa-solid fa-fire-flame-curved"></i></p>
                 <p>Released under the MIT License | Editor: <span class="kbd">Ctrl</span> + <span class="kbd">B</span>
                 </p>
@@ -38,6 +41,8 @@
                 <div class="editor-header">
                     <h2>Editor</h2>
                     <div class="actions">
+                        <button id="icon-selector-btn" class="btn btn-neutral" title="アイコン一覧"><i
+                                class="fa fa-face-smile"></i></button>
                         <button id="discard-btn" class="btn btn-outline-danger" title="変更を破棄して元に戻す"><i
                                 class="fa fa-trash-can"></i></button>
                         <button id="save-btn" class="btn btn-neutral"><i class="fa fa-clipboard"></i> コピー</button>
@@ -46,13 +51,27 @@
                     </div>
                 </div>
                 <textarea id="markdown-input" placeholder="Markdownを入力してください..."></textarea>
-                <!-- Removed status status message as requested -->
-
                 <div class="local-mode-help">
                     <button id="help-btn" class="btn-text">完全ローカルモードの設定方法</button>
                 </div>
             </div>
         </aside>
+
+        <!-- Floating Edit Button -->
+        <button id="floating-edit-btn" class="btn-floating" title="編集モードを切り替える (Ctrl+B)">
+            <i class="fa-solid fa-pen-to-square"></i>
+        </button>
+    </div>
+
+    <div id="icon-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>アイコン一覧</h2>
+            <p class="note">クリックするとアイコン名をコピーします。Markdownで <code>icon:xxxxx</code> と入力して使用できます。</p>
+            <div id="icon-grid" class="icon-grid">
+                <!-- Icons will be injected here -->
+            </div>
+        </div>
     </div>
 
     <div id="help-modal" class="modal hidden">

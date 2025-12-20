@@ -1,1 +1,4 @@
 data.js
+images/*
+!images/.gitkeep
+!images/bonfire.png

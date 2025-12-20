@@ -14,6 +14,22 @@
     --spacing-unit: 1rem;
     --editor-width: 50%;
     --footer-height: 50px;
+    --btn-text: #1a1a1a;
+    --notice-bg: #333;
+}
+
+body.light-mode {
+    --bg-color: #f8f9fa;
+    --text-color: #212529;
+    --accent-color: #d35400;
+    --accent-hover: #e67e22;
+    --card-bg: #ffffff;
+    --card-border: #dee2e6;
+    --secondary-bg: #f8f9fa;
+    --muted-text: #6c757d;
+    --code-bg: #ffffff;
+    --btn-text: #ffffff;
+    --notice-bg: #e9ecef;
 }
 
 * {
@@ -164,7 +180,7 @@ textarea:focus {
     align-items: center;
     justify-content: center;
     background-color: var(--accent-color);
-    color: #1a1a1a;
+    color: var(--btn-text);
     border: 1px solid var(--accent-color);
     padding: 0.5rem 1rem;
     border-radius: var(--border-radius);
@@ -206,17 +222,17 @@ textarea:focus {
 /* Notification Bar */
 .notification-bar {
     position: fixed;
-    top: 0;
+    bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #333;
-    border-bottom: 2px solid var(--accent-color);
+    background-color: var(--notice-bg);
+    border-top: 2px solid var(--accent-color);
     padding: 0.75rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 900;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .notice-content {
@@ -228,12 +244,11 @@ textarea:focus {
 }
 
 #app.has-notice #main-view {
-    margin-top: 60px;
+    margin-bottom: 60px;
     /* Space for banner */
 }
 
 #app.has-notice #edit-view {
-    top: 60px;
     height: calc(100% - 60px);
 }
 
@@ -246,12 +261,12 @@ textarea:focus {
     }
 
     #app.has-notice #main-view {
-        margin-top: 90px;
+        margin-bottom: 90px;
     }
 
     #app.has-notice #edit-view {
-        top: auto;
-        height: 50%;
+        bottom: 90px;
+        height: calc(50% - 90px);
     }
 }
 
@@ -353,12 +368,6 @@ textarea:focus {
     padding: 1.5rem;
     margin-bottom: 1rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-    border-color: var(--accent-color);
 }
 
 .card-title {
@@ -368,12 +377,91 @@ textarea:focus {
     color: var(--accent-color);
 }
 
+/* Link Cards */
+.link-card {
+    display: block;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-decoration: none;
+    color: inherit;
+}
+
+.link-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-color);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 159, 67, 0.1);
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.link-card h3 {
+    margin-top: 0.5rem;
+    color: var(--accent-color);
+}
+
+.link-card p {
+    margin-bottom: 0;
+    color: var(--text-color);
+}
+
+.link-card img {
+    margin-top: 0;
+}
+
+/* Specific rounding for basic images only */
+.link-card img:not(.profile-image):not(.rounded-image) {
+    border-radius: calc(var(--border-radius) / 2);
+}
+
 /* Custom Grid */
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
+}
+
+/* Rounded Images */
+.rounded-image {
+    border-radius: 12px;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Profile Images (Circular) */
+.profile-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: inline-block;
+    margin: 1rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Center Container */
+.center-container {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.center-container .profile-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Muted Text */
+.muted-text {
+    color: var(--muted-text);
+    font-size: 0.9em;
 }
 
 /* Utilities */
@@ -472,5 +560,149 @@ textarea:focus {
     .btn-subtle i {
         transform: rotate(90deg);
         /* Point down on mobile */
+    }
+}
+
+/* Icon Selector Styles */
+.icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: var(--code-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.icon-item:hover {
+    border-color: var(--accent-color);
+    background-color: rgba(255, 159, 67, 0.1);
+    transform: translateY(-2px);
+}
+
+.icon-item i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.icon-item span {
+    font-size: 0.75rem;
+    color: var(--muted-text);
+    text-align: center;
+    word-break: break-all;
+}
+
+/* Floating Edit Button */
+.btn-floating {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--muted-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: none;
+    z-index: 800;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+    font-size: 0.9rem;
+}
+
+.btn-floating:hover {
+    opacity: 1;
+    transform: none;
+    background-color: var(--card-bg);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+body.light-mode .btn-floating {
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+#app.has-notice .btn-floating {
+    bottom: calc(1rem + 60px);
+}
+
+/* Removed redundant block */
+
+@media (max-width: 768px) {
+    .btn-floating {
+        bottom: 0.75rem;
+        right: 0.75rem;
+        width: 32px;
+        height: 32px;
+        font-size: 0.85rem;
+    }
+
+    #app.has-notice .btn-floating {
+        bottom: calc(0.75rem + 90px);
+    }
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--muted-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+    font-size: 0.9rem;
+}
+
+/* Move toggle when editor is open on desktop */
+@media (min-width: 769px) {
+    #main-view:has(~ #edit-view:not(.hidden)) .theme-toggle {
+        right: calc(var(--editor-width) + 1rem);
+    }
+}
+
+.theme-toggle:hover {
+    opacity: 1;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+body.light-mode .theme-toggle {
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+    .theme-toggle {
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 32px;
+        height: 32px;
     }
 }
