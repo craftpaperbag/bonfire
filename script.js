@@ -79,7 +79,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return id;
         });
 
-        // 2. Custom Syntax Replacements
+        // 2. Custom Syntax Replacements (Inline elements first)
+        // Icons
+        processed = processed.replace(/icon:fa-([a-z0-9-]+)/g, '<i class="fa-solid fa-$1"></i>');
+
+        // Images
+        // Use a more restricted regex to avoid capturing HTML tags or trailing spaces
+        processed = processed.replace(/image:([a-zA-Z0-9._-]+)/g, '<img src="images/$1" alt="$1" class="rounded-image">');
+
+        // Block Elements
         // Cards
         processed = processed.replace(/:::\s*card\s*([^\n]*)\n([\s\S]*?)\n:::/gm, (match, title, content) => {
             const innerHtml = typeof marked !== 'undefined' ? marked.parse(content) : content;
@@ -98,12 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return `<div class="grid-container">\n${content}\n</div>`;
         });
-
-        // Icons
-        processed = processed.replace(/icon:fa-([a-z0-9-]+)/g, '<i class="fa-solid fa-$1"></i>');
-
-        // Images
-        processed = processed.replace(/image:([^\s]+)/g, '<img src="images/$1" alt="$1" class="rounded-image">');
 
         // 3. Restore protected code
         for (let i = placeholders.length - 1; i >= 0; i--) {
