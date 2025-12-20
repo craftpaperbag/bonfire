@@ -84,10 +84,19 @@ document.addEventListener('DOMContentLoaded', () => {
         processed = processed.replace(/icon:fa-([a-z0-9-]+)/g, '<i class="fa-solid fa-$1"></i>');
 
         // Images
-        // Use a more restricted regex to avoid capturing HTML tags or trailing spaces
-        processed = processed.replace(/image:([a-zA-Z0-9._-]+)/g, '<img src="images/$1" alt="$1" class="rounded-image">');
+        // Support image:filename (rounded) and image@:filename (circular profile)
+        processed = processed.replace(/image(@?):([a-zA-Z0-9._-]+)/g, (match, at, filename) => {
+            const className = at === '@' ? 'profile-image' : 'rounded-image';
+            return `<img src="images/${filename}" alt="${filename}" class="${className}">`;
+        });
 
         // Block Elements
+        // Center Container
+        processed = processed.replace(/:::\s*center\s*\n([\s\S]*?)\n:::/gm, (match, content) => {
+            const innerHtml = typeof marked !== 'undefined' ? marked.parse(content) : content;
+            return `<div class="center-container">\n${innerHtml}\n</div>`;
+        });
+
         // Cards
         processed = processed.replace(/:::\s*card\s*([^\n]*)\n([\s\S]*?)\n:::/gm, (match, title, content) => {
             const innerHtml = typeof marked !== 'undefined' ? marked.parse(content) : content;
