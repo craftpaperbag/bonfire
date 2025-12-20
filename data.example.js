@@ -5,9 +5,8 @@ const bonfireDefaultData = `
 Ctrl + B で編集画面を開いて、このテキストを自由に書き換えてください。
 
 ::: center
-image@:profile.png
-### Your Name
-こんにちは。Bonfireへようこそ！
+image@:bonfire.png
+Bonfireへようこそ！
 :::
 
 ::: grid
