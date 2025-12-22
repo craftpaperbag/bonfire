@@ -70,16 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return saved;
         }
 
-        // 2. Check User Data (data.js)
-        if (typeof bonfireUserData !== 'undefined' && bonfireUserData) {
-            console.log('Loaded from User Data File');
-            return bonfireUserData;
-        }
-
-        // 3. Fallback to Example Data
-        if (typeof bonfireDefaultData !== 'undefined') {
-            console.log('Loaded from Default Data');
-            return bonfireDefaultData;
+        // 2. Check Data File (data.js or data.example.js)
+        if (typeof bonfireData !== 'undefined' && bonfireData) {
+            console.log('Loaded from Data File');
+            return bonfireData;
         }
 
         return '# Hello Bonfire\nNo data found.';
@@ -422,10 +416,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Re-load default data
             let originalContent = '';
-            if (typeof bonfireUserData !== 'undefined' && bonfireUserData) {
-                originalContent = bonfireUserData;
-            } else if (typeof bonfireDefaultData !== 'undefined') {
-                originalContent = bonfireDefaultData;
+            if (typeof bonfireData !== 'undefined' && bonfireData) {
+                originalContent = bonfireData;
             } else {
                 originalContent = '# Hello Bonfire\nNo data found.';
             }
