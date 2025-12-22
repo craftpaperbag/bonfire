@@ -20,6 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = document.getElementById('app');
     const themeToggleBtn = document.getElementById('theme-toggle');
 
+    // Toast Container
+    const toastContainer = document.createElement('div');
+    toastContainer.className = 'toast-container';
+    document.body.appendChild(toastContainer);
+
+    function showToast(message, icon = 'check') {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `<i class="fa fa-${icon}"></i> <span>${message}</span>`;
+        toastContainer.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
     // State
     const STORAGE_KEY = 'bonfire_content';
     const THEME_KEY = 'bonfire_theme';
@@ -72,6 +85,53 @@ document.addEventListener('DOMContentLoaded', () => {
         return '# Hello Bonfire\nNo data found.';
     }
 
+    // --- Markdown Parser Configuration & Custom Extensions ---
+
+    if (typeof marked !== 'undefined') {
+        const renderer = new marked.Renderer();
+        const originalCodeRenderer = renderer.code.bind(renderer);
+        const originalLinkRenderer = renderer.link.bind(renderer);
+
+        // Helper to check for local file paths
+        function isLocalPath(url) {
+            if (!url) return false;
+            const u = url.trim();
+            // file://, C:\, /abc, D:/ etc.
+            return u.startsWith('file://') ||
+                /^[a-zA-Z]:\\/.test(u) ||
+                /^[a-zA-Z]:\//.test(u) ||
+                u.startsWith('/') ||
+                u.startsWith('\\\\');
+        }
+
+        renderer.link = function (token) {
+            const { href, title, text } = token;
+            if (isLocalPath(href)) {
+                const titleAttr = title ? ` title="${title}"` : '';
+                return `<a href="#" class="local-file-link" data-path="${href}"${titleAttr}>${text}</a>`;
+            }
+            return originalLinkRenderer(token);
+        };
+
+        renderer.code = function (code, language, escaped) {
+            // Check if code is an object (newer marked versions) or string
+            let codeContent = typeof code === 'object' ? code.text : code;
+            let lang = typeof code === 'object' ? code.lang : language;
+
+            const html = originalCodeRenderer(code, language, escaped);
+            // Use <span> instead of <div> because this might be inside an <a> tag (link card)
+            // and block-level <div> inside <a> can cause browser to auto-close the <a> tag improperly.
+            return `<span class="code-block-wrapper">
+                <button class="copy-code-btn" title="コードをコピー">
+                    <i class="fa fa-clipboard"></i> <span>Copy</span>
+                </button>
+                ${html}
+            </span>`;
+        };
+
+        marked.setOptions({ renderer });
+    }
+
     const initialContent = loadData();
     inputEl.value = initialContent;
 
@@ -84,23 +144,25 @@ document.addEventListener('DOMContentLoaded', () => {
         app.classList.remove('has-notice');
     }
 
-    render(initialContent);
-
-    // ... (parsing logic unchanged) ...
-    // Note: I will use ReplaceChunk to avoid rewriting the whole file, targeting specific sections.
-    // Wait, I cannot use `...` in ReplacementContent. I must include the full block or use multiple ReplaceChunks.
-    // I will rewrite the Render function separately if needed, but here I am focusing on init logic.
-    // The previous view_file was small, let me just act on the init block.
+    // render is called later after function definitions
 
     // --- Markdown Parser Configuration & Custom Extensions ---
 
-    function preprocessMarkdown(markdown) {
+    function preprocessMarkdown(markdown, protect) {
         let processed = markdown;
         const placeholders = [];
 
-        // 1. Protect code blocks and spans
+        // 1. Protect code blocks and spans during regex processing
+        const restorePlaceholders = (text) => {
+            let res = text;
+            for (let i = placeholders.length - 1; i >= 0; i--) {
+                res = res.replace(placeholders[i].id, placeholders[i].original);
+            }
+            return res;
+        };
+
         processed = processed.replace(/(```[\s\S]*?```|`[^`\n]*`)/g, (match) => {
-            const id = `__BT_PLACEHOLDER_${placeholders.length}__`;
+            const id = `%%BT_PLACEHOLDER_${placeholders.length}%%`;
             placeholders.push({ id, original: match });
             return id;
         });
@@ -121,16 +183,20 @@ document.addEventListener('DOMContentLoaded', () => {
         processed = processed.replace(/(?<!\])\(([^)]+)\)/g, '<span class="muted-text">$1</span>');
 
         // Block Elements
+        // For blocks, we render them now and protect the result from the final marked.parse
+
         // Center Container
         processed = processed.replace(/:::\s*center\s*\n([\s\S]*?)\n:::/gm, (match, content) => {
-            const innerHtml = typeof marked !== 'undefined' ? marked.parse(content) : content;
-            return `<div class="center-container">\n${innerHtml}\n</div>`;
+            const innerContent = restorePlaceholders(content);
+            const innerHtml = typeof marked !== 'undefined' ? marked.parse(innerContent) : innerContent;
+            return protect(`<div class="center-container">\n${innerHtml}\n</div>`);
         });
 
         // Cards
         processed = processed.replace(/:::\s*card\s*([^\n]*)\n([\s\S]*?)\n:::/gm, (match, title, content) => {
-            const innerHtml = typeof marked !== 'undefined' ? marked.parse(content) : content;
-            return `<div class="card"><div class="card-title">${title}</div><div class="card-body">\n${innerHtml}\n</div></div>`;
+            const innerContent = restorePlaceholders(content);
+            const innerHtml = typeof marked !== 'undefined' ? marked.parse(innerContent) : innerContent;
+            return protect(`<div class="card"><div class="card-title">${title}</div><div class="card-body">\n${innerHtml}\n</div></div>`);
         });
 
         // Link Cards
@@ -145,9 +211,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 url = altMatch[2];
             }
 
-            const innerHtml = typeof marked !== 'undefined' ? marked.parse(content) : content;
+            const innerContent = restorePlaceholders(content);
+            const innerHtml = typeof marked !== 'undefined' ? marked.parse(innerContent) : innerContent;
             const ariaAttr = alt ? ` aria-label="${alt}"` : '';
-            return `<a href="${url}" class="link-card"${ariaAttr} target="_blank">\n${innerHtml}\n</a>`;
+
+            if (isLocalPath(url)) {
+                return protect(`<a href="#" class="link-card local-file-link"${ariaAttr} data-path="${url}">\n${innerHtml}\n</a>`);
+            }
+            return protect(`<a href="${url}" class="link-card"${ariaAttr} target="_blank">\n${innerHtml}\n</a>`);
         });
 
         // Grids
@@ -155,32 +226,96 @@ document.addEventListener('DOMContentLoaded', () => {
             const parts = content.split(/^\s*\|\s*$/gm);
             if (parts.length > 1) {
                 const gridItems = parts.map(p => {
-                    const inner = typeof marked !== 'undefined' ? marked.parse(p.trim()) : p;
+                    const innerContent = restorePlaceholders(p.trim());
+                    const inner = typeof marked !== 'undefined' ? marked.parse(innerContent) : innerContent;
                     return `<div>${inner}</div>`;
                 }).join('\n');
-                return `<div class="grid-container">\n${gridItems}\n</div>`;
+                return protect(`<div class="grid-container">\n${gridItems}\n</div>`);
             }
-            return `<div class="grid-container">\n${content}\n</div>`;
+            return protect(`<div class="grid-container">\n${content}\n</div>`);
         });
 
-        // 3. Restore protected code
-        for (let i = placeholders.length - 1; i >= 0; i--) {
-            processed = processed.replace(placeholders[i].id, placeholders[i].original);
-        }
+        // 3. Restore remaining protected code
+        processed = restorePlaceholders(processed);
 
         return processed;
     }
 
-    function render(markdown) {
-        // Pre-process custom syntax (which now handles its own inner marked.parse)
-        let html = preprocessMarkdown(markdown);
 
+    // Event Delegation for Links and Copy Buttons
+    contentEl.addEventListener('click', (e) => {
+        // Local File Link Copy
+        const localLink = e.target.closest('.local-file-link');
+        if (localLink) {
+            e.preventDefault();
+            const path = localLink.getAttribute('data-path');
+            navigator.clipboard.writeText(path).then(() => {
+                showToast('パスをコピーしました', 'folder');
+            });
+            return;
+        }
+
+        const btn = e.target.closest('.copy-code-btn');
+        if (btn) {
+            const wrapper = btn.closest('.code-block-wrapper');
+            const codeEl = wrapper.querySelector('code');
+            const text = codeEl.innerText;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const icon = btn.querySelector('i');
+                const span = btn.querySelector('span');
+                const originalIcon = icon.className;
+                const originalText = span.innerText;
+
+                icon.className = 'fa fa-check';
+                span.innerText = 'Copied!';
+                btn.style.color = '#4cd137';
+                btn.style.borderColor = '#4cd137';
+
+                showToast('コピーしました');
+
+                setTimeout(() => {
+                    icon.className = originalIcon;
+                    span.innerText = originalText;
+                    btn.style.color = '';
+                    btn.style.borderColor = '';
+                }, 2000);
+            });
+        }
+    });
+
+    function render(markdown) {
+        const finalPlaceholders = [];
+        const protect = (html) => {
+            const id = `%%BONFIRE_BLOCK_${finalPlaceholders.length}%%`;
+            finalPlaceholders.push({ id, html });
+            return id;
+        };
+
+        // Pre-process custom syntax
+        let htmlText = preprocessMarkdown(markdown, protect);
+
+        let html = "";
         // Final pass for the rest of the document
         if (typeof marked !== 'undefined') {
-            contentEl.innerHTML = marked.parse(html);
+            html = marked.parse(htmlText);
         } else {
-            contentEl.innerHTML = html;
+            html = htmlText;
         }
+
+        // Clean up: marked.parse often wraps placeholders in <p> tags which breaks our layout.
+        // We remove <p>...</p> tags that ONLY contain the placeholder.
+        finalPlaceholders.forEach(placeholder => {
+            const pattern = new RegExp(`<p>\\s*${placeholder.id}\\s*</p>`, 'g');
+            html = html.replace(pattern, placeholder.id);
+        });
+
+        // Restore protected blocks after marked.parse has done its job
+        for (let i = finalPlaceholders.length - 1; i >= 0; i--) {
+            html = html.replace(finalPlaceholders[i].id, finalPlaceholders[i].html);
+        }
+
+        contentEl.innerHTML = html;
 
         // Update Page Title based on first H1
         const titleMatch = markdown.match(/^#\s+(.+)$/m);
@@ -188,6 +323,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.title = titleMatch[1].trim();
         }
     }
+
+    // Call initial render here, after all functions are defined
+    render(initialContent);
 
     // --- Editor Logic ---
     function toggleEditor() {
@@ -236,7 +374,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Copy to Clipboard (Editor)
     saveBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(inputEl.value).then(() => {
-            alert('クリップボードにコピーしました！\n\nプロジェクトフォルダの `data.js` ファイルを開き、\n`bonfireUserData` 変数の中身を書き換えて保存してください。');
+            showToast('クリップボードにコピーしました');
+            // alert removed for smoother experience, toast is enough
         });
     });
 
@@ -334,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Global Copy (from notice bar)
     globalCopyBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(inputEl.value).then(() => {
-            alert('クリップボードにコピーしました！\n\nプロジェクトフォルダの `data.js` ファイルを開き、\n`bonfireUserData` 変数の中身を書き換えて保存してください。');
+            showToast('クリップボードにコピーしました');
         });
     });
 
