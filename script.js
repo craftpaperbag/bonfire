@@ -87,6 +87,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Markdown Parser Configuration & Custom Extensions ---
 
+    // Helper to check for local file paths
+    function isLocalPath(url) {
+        if (!url) return false;
+        const u = url.trim();
+        // file://, C:\, /abc, D:/ etc.
+        return u.startsWith('file://') ||
+            /^[a-zA-Z]:\\/.test(u) ||
+            /^[a-zA-Z]:\//.test(u) ||
+            u.startsWith('/') ||
+            u.startsWith('\\\\');
+    }
+
     if (typeof marked !== 'undefined') {
         const renderer = new marked.Renderer();
         const originalCodeRenderer = renderer.code.bind(renderer);
@@ -182,6 +194,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Use negative lookbehind to avoid matching Markdown links [label](url)
         processed = processed.replace(/(?<!\])\(([^)]+)\)/g, '<span class="muted-text">$1</span>');
 
+        // Buttons (Inline)
+        // button [text](url)
+        processed = processed.replace(/button\s+\[(.*?)\]\((.*?)\)/g, (match, text, url) => {
+            const isLocal = isLocalPath(url);
+            const className = isLocal ? 'button-link local-file-link' : 'button-link';
+            const dataAttr = isLocal ? ` data-path="${url}"` : '';
+            const href = isLocal ? '#' : url;
+            const target = isLocal ? '' : ' target="_blank"';
+            return `<a href="${href}" class="${className}"${dataAttr}${target}>${text}</a>`;
+        });
+
         // Block Elements
         // For blocks, we render them now and protect the result from the final marked.parse
 
@@ -190,6 +213,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const innerContent = restorePlaceholders(content);
             const innerHtml = typeof marked !== 'undefined' ? marked.parse(innerContent) : innerContent;
             return protect(`<div class="center-container">\n${innerHtml}\n</div>`);
+        });
+
+        // Buttons (Block)
+        processed = processed.replace(/:::\s*button\s*([^\n]*)\n([\s\S]*?)\n:::/gm, (match, url, text) => {
+            const trimmedUrl = url.trim();
+            const isLocal = isLocalPath(trimmedUrl);
+            const className = isLocal ? 'button-link local-file-link' : 'button-link';
+            const dataAttr = isLocal ? ` data-path="${trimmedUrl}"` : '';
+            const href = isLocal ? '#' : trimmedUrl;
+            const target = isLocal ? '' : ' target="_blank"';
+            return protect(`<a href="${href}" class="${className}"${dataAttr}${target}>${text.trim()}</a>`);
         });
 
         // Cards
