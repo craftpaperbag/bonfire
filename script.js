@@ -209,14 +209,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // For blocks, we render them now and protect the result from the final marked.parse
 
         // Center Container
-        processed = processed.replace(/:::\s*center\s*\n([\s\S]*?)\n:::/gm, (match, content) => {
+        processed = processed.replace(/:::[ \t]*center[ \t]*\n([\s\S]*?)\n:::[ \t]*$/gm, (match, content) => {
             const innerContent = restorePlaceholders(content);
             const innerHtml = typeof marked !== 'undefined' ? marked.parse(innerContent) : innerContent;
             return protect(`<div class="center-container">\n${innerHtml}\n</div>`);
         });
 
         // Buttons (Block)
-        processed = processed.replace(/:::\s*button\s*([^\n]*)\n([\s\S]*?)\n:::/gm, (match, url, text) => {
+        processed = processed.replace(/:::[ \t]*button[ \t]*([^\n]*)\n([\s\S]*?)\n:::[ \t]*$/gm, (match, url, text) => {
             const trimmedUrl = url.trim();
             const isLocal = isLocalPath(trimmedUrl);
             const className = isLocal ? 'button-link local-file-link' : 'button-link';
@@ -227,14 +227,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Cards
-        processed = processed.replace(/:::\s*card\s*([^\n]*)\n([\s\S]*?)\n:::/gm, (match, title, content) => {
+        processed = processed.replace(/:::[ \t]*card[ \t]*([^\n]*)\n([\s\S]*?)\n:::[ \t]*$/gm, (match, title, content) => {
             const innerContent = restorePlaceholders(content);
             const innerHtml = typeof marked !== 'undefined' ? marked.parse(innerContent) : innerContent;
-            return protect(`<div class="card"><div class="card-title">${title}</div><div class="card-body">\n${innerHtml}\n</div></div>`);
+            return protect(`<div class="card"><div class="card-title">${title.trim()}</div><div class="card-body">\n${innerHtml}\n</div></div>`);
         });
 
         // Link Cards
-        processed = processed.replace(/:::\s*link\s*([^\n]*)\n([\s\S]*?)\n:::/gm, (match, linkData, content) => {
+        processed = processed.replace(/:::[ \t]*link[ \t]*([^\n]*)\n([\s\S]*?)\n:::[ \t]*$/gm, (match, linkData, content) => {
             let url = linkData.trim();
             let alt = '';
 
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Grids
-        processed = processed.replace(/:::\s*grid\s*\n([\s\S]*?)\n:::/gm, (match, content) => {
+        processed = processed.replace(/:::[ \t]*grid[ \t]*\n([\s\S]*?)\n:::[ \t]*$/gm, (match, content) => {
             const parts = content.split(/^\s*\|\s*$/gm);
             if (parts.length > 1) {
                 const gridItems = parts.map(p => {
