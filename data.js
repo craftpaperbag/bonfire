@@ -1,5 +1,17 @@
-// ユーザーデータファイル
-// このファイルを編集してデータを永続化します。
-// 例: const bonfireUserData = \`# My Dashboard ...\`;
+var bonfireData = `
+# title
 
-const bonfireUserData = null; 
+
+:::grid
+
+:::button https://gemini.google
+gemini
+:::
+
+:::card なぜか
+なぜか
+でてしまうんだな
+:::
+
+:::
+`;

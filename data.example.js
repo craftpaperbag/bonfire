@@ -1,4 +1,4 @@
-const bonfireDefaultData = `
+var bonfireData = `
 # Bonfire 🔥
 
 毎日の活動の拠点となる、あなただけのリンク集へようこそ。
