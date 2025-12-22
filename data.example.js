@@ -1,40 +1,91 @@
+/* 
+  Bonfire - data.example.js
+  このファイルを data.js としてコピーすると、内容が反映されます。
+*/
+
 var bonfireData = `
 # Bonfire 🔥
 
-毎日の活動の拠点となる、あなただけのリンク集へようこそ。
-Ctrl + B で編集画面を開いて、このテキストを自由に書き換えてください。
+あなただけのミニマルなポータルサイトへようこそ。
+(Ctrl + B でこのテキストを自由に書き換えられます)
 
 ::: center
 image@:bonfire.png
-Bonfireへようこそ！
+## 灯を絶やさない
+日々のタスク、アイデア、よく使うリンクをここに集約しましょう。
 :::
 
 ::: grid
-::: card よく使うツール
+::: card 🎨 デザイン & インスピレーション
+- [Dribbble](https://dribbble.com) icon:globe
+- [Pinterest](https://pinterest.com) icon:star
+- [Coolors](https://coolors.co) icon:pen
+:::
+
+::: card 🛠️ 開発ツール
 - [GitHub](https://github.com) icon:house
-- [Google](https://google.com) icon:globe
-- [ChatGPT](https://chatgpt.com) icon:gear
+- [Stack Overflow](https://stackoverflow.com) icon:circle-question
+- [Linear](https://linear.app) icon:check-double
 :::
 
-::: card プロジェクト
-- [Bonfire Repo](https://github.com/craftpaperbag/bonfire) icon:fire
-- [Design System](https://example.com) icon:pen
+::: card 📚 学習 & ドキュメント
+- [MDN Web Docs](https://developer.mozilla.org) icon:book
+- [Web.dev](https://web.dev) icon:lightbulb
+- [Zenn](https://zenn.dev) icon:pencil
 :::
 :::
 
-## リンクカード
+---
+
+## 🚀 プロジェクト
 ::: link [Bonfire Repository](https://github.com/craftpaperbag/bonfire)
-### Bonfire 🔥
-Bonfireはミニマルな個人用ポータルサイトです。Markdownで簡単に自分だけのページを作成できます。
+### Bonfire Project icon:fire
+ミニマルでカスタマイズ性の高い自分専用のダッシュボード。
+Markdown だけで直感的に構成を変更できます。
 :::
 
-## 記法ガイド
+## 📋 クイックアクション
+::: button https://github.com/new
+新しいリポジトリを作成
+:::
 
-- **カード**: \`::: card タイトル ... :::\` で囲むとカードになります。
-- **グリッド**: \`::: grid ... :::\` で囲むと、中のカードがグリッド状に並びます。
-- **センター**: \`::: center ... :::\` でテキストや画像を中央寄せにします。
-- **リンクカード**: \`::: link URL ... :::\` でリンクカードを作成します。
-- **アイコン**: \`icon:アイコン名\` でFontAwesomeのアイコンを表示できます。
-- **画像**: \`image:ファイル名\` で画像を丸角に、\`image@:ファイル名\` で円形のプロフィール画像になります。
-- **補足テキスト**: 半角の括弧 \`( )\` で囲むと、控えめな色で表示されます。
+::: grid
+button [ChatGPT を開く](https://chatgpt.com)
+|
+button [Google 検索](https://google.com)
+:::
+
+---
+
+## 📖 記法ガイド
+Bonfire では通常の Markdown に加え、専用の拡張記法が使用可能です。
+
+### 1. レイアウトブロック
+- **カード**: \`::: card タイトル\` ... \`:::\` で内容を囲みます。
+- **グリッド**: \`::: grid\` ... \`:::\` で要素を囲むと、中のアイテムが横に並びます。 \`|\` で明示的に列を区切ることもできます。
+- **センター**: \`::: center\` ... \`:::\` で中央寄せにします。
+
+### 2. インライン要素
+- **アイコン**: \`icon:アイコン名\` で FontAwesome のアイコンを表示します。 (例: icon:fire icon:star icon:gear)
+- **画像**:
+  - \`image:filename.png\` で丸角画像を表示
+  - \`image@:filename.png\` で円形のプロフィール画像を表示
+- **補足テキスト**: \`( )\` で囲むと (このように) 控えめな色になります。
+
+### 3. 特殊なリンク
+- **リンクカード**:
+  \`\`\`markdown
+  ::: link [ラベル](URL)
+  ### タイトル
+  説明文など
+  :::
+  \`\`\`
+- **ボタン**:
+  - ブロック型: \`::: button URL\` ボタンテキスト \`:::\`
+  - インライン型: \`button [テキスト](URL)\`
+- **ローカルパス**: \`[My Documents](file:///C:/Users/User/Documents)\`
+  クリックするとパスをクリップボードにコピーします。 (ローカル、共有フォルダ、ファイルに対応)
+
+> **Pro Tip**: エディタの「顔マーク」ボタンからアイコン一覧を表示し、クリックするだけで記法をコピーできます。
+(自動保存機能により、編集内容はブラウザに一時保存されます)
 `;
