@@ -10,6 +10,7 @@
     --secondary-bg: #121212;
     --muted-text: #888;
     --code-bg: #111;
+    --code-border: #404040;
     --border-radius: 8px;
     --spacing-unit: 1rem;
     --editor-width: 50%;
@@ -28,6 +29,7 @@ body.light-mode {
     --secondary-bg: #f8f9fa;
     --muted-text: #6c757d;
     --code-bg: #ffffff;
+    --code-border: #dee2e6;
     --btn-text: #ffffff;
     --notice-bg: #e9ecef;
 }
@@ -355,6 +357,118 @@ textarea:focus {
     margin-bottom: 0.25rem;
 }
 
+/* Code Blocks */
+.markdown-body pre {
+    background-color: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    position: relative;
+    padding-top: 2.5rem;
+    /* Space for copy button */
+}
+
+.markdown-body code {
+    font-family: 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.9rem;
+    background-color: var(--code-bg);
+    border-radius: 4px;
+}
+
+/* Inline code doesn't need the same padding/border as block code */
+.markdown-body :not(pre)>code {
+    padding: 0.2rem 0.4rem;
+    border: 1px solid var(--code-border);
+}
+
+.code-block-wrapper {
+    display: block;
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.copy-code-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--muted-text);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.copy-code-btn:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    background-color: var(--secondary-bg);
+}
+
+.copy-code-btn i {
+    font-size: 0.9rem;
+}
+
+/* Toast Notification */
+.toast-container {
+    position: fixed;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    pointer-events: none;
+}
+
+.toast {
+    background-color: var(--accent-color);
+    color: var(--btn-text);
+    padding: 0.75rem 1.5rem;
+    border-radius: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: toast-in 0.3s ease-out, toast-out 0.3s ease-in 2.7s forwards;
+    pointer-events: auto;
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes toast-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
 .markdown-body li>ul,
 .markdown-body li>ol {
     margin-bottom: 0;
@@ -389,6 +503,8 @@ textarea:focus {
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     text-decoration: none;
     color: inherit;
+    position: relative;
+    /* For icon positioning */
 }
 
 .link-card:hover {
@@ -396,6 +512,29 @@ textarea:focus {
     border-color: var(--accent-color);
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 159, 67, 0.1);
     background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Base icon style for link cards */
+.link-card::after {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 1.1rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    opacity: 0.3;
+    transition: all 0.3s;
+}
+
+.link-card:hover::after {
+    opacity: 0.8;
+    color: var(--accent-color);
+}
+
+/* Regular Link Icon */
+.link-card:not(.local-file-link)::after {
+    content: '\f35d';
+    /* external-link-alt */
 }
 
 .link-card h3 {
@@ -412,9 +551,89 @@ textarea:focus {
     margin-top: 0;
 }
 
+/* Local File Link Styles */
+.local-file-link {
+    cursor: copy;
+    position: relative;
+    padding-right: 1.25em;
+    word-break: break-all;
+}
+
+.local-file-link::after {
+    content: '\f07b';
+    /* folder */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.8em;
+    margin-left: 0.4em;
+    opacity: 0.7;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* For link cards override */
+.link-card.local-file-link::after {
+    font-size: 1.1rem;
+    top: 1rem;
+    right: 1rem;
+    transform: none;
+}
+
 /* Specific rounding for basic images only */
 .link-card img:not(.profile-image):not(.rounded-image) {
     border-radius: calc(var(--border-radius) / 2);
+}
+
+/* Button Links */
+.button-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 1.2rem 1.5rem;
+    background-color: var(--accent-color);
+    color: var(--btn-text) !important;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    text-decoration: none !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 1rem;
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.button-link:hover {
+    background-color: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.button-link.local-file-link {
+    cursor: pointer;
+    padding-right: 1.5rem;
+    /* Reset padding-right if inherit from .local-file-link */
+}
+
+/* Override general local-file-link icon for button-link */
+.button-link.local-file-link::after {
+    content: '\f07b';
+    /* folder */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 1.1rem;
+    margin-left: 0.75rem;
+    opacity: 0.9;
+    position: static;
+    transform: none;
+}
+
+/* Non-local buttons don't have icons as per requirement */
+.button-link:not(.local-file-link)::after {
+    display: none;
 }
 
 /* Custom Grid */
@@ -423,6 +642,16 @@ textarea:focus {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
+}
+
+.grid-container>div {
+    display: flex;
+    flex-direction: column;
+}
+
+.grid-container>div>.button-link {
+    flex: 1;
+    margin-bottom: 0;
 }
 
 /* Rounded Images */
@@ -605,8 +834,8 @@ textarea:focus {
 /* Floating Edit Button */
 .btn-floating {
     position: fixed;
-    bottom: 1rem;
-    right: 1rem;
+    top: 1rem;
+    right: 4rem;
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -638,24 +867,22 @@ body.light-mode .btn-floating {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-#app.has-notice .btn-floating {
-    bottom: calc(1rem + 60px);
-}
+/* Removed bottom adjustment for top-aligned button */
+
 
 /* Removed redundant block */
 
 @media (max-width: 768px) {
     .btn-floating {
-        bottom: 0.75rem;
-        right: 0.75rem;
+        top: 0.75rem;
+        right: 3.25rem;
         width: 32px;
         height: 32px;
         font-size: 0.85rem;
     }
 
-    #app.has-notice .btn-floating {
-        bottom: calc(0.75rem + 90px);
-    }
+    /* Removed bottom adjustment for top-aligned button */
+
 }
 
 /* Theme Toggle Button */
